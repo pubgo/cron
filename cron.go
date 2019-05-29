@@ -244,3 +244,9 @@ func (c *Cron) entrySnapshot() []*Entry {
 	}
 	return entries
 }
+
+func (c *Cron) Each(fn func(e *Entry)) {
+	for _, e := range c.entries {
+		fn(e)
+	}
+}

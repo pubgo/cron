@@ -296,3 +296,30 @@ func stop(cron *Cron) chan bool {
 	}()
 	return ch
 }
+
+func TestMuti(t *testing.T) {
+	wg := &sync.WaitGroup{}
+	cron := New()
+	_func := func(t time.Time, name string) {
+		go func() {
+			fmt.Println(t.UnixNano(), name)
+			wg.Done()
+		}()
+	}
+
+	for i := 0; i < 100000; i++ {
+		fmt.Println(i)
+		wg.Add(1)
+		cron.AddFunc("*/2 * * * * *", _func, fmt.Sprintf("test%d", i))
+	}
+
+	cron.Start()
+
+	cron.Each(func(e *Entry) {
+		fmt.Println(e.Name)
+	})
+
+	defer cron.Stop()
+
+	wg.Wait()
+}
