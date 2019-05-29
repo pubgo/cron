@@ -250,3 +250,12 @@ func (c *Cron) Each(fn func(e *Entry)) {
 		fn(e)
 	}
 }
+
+func (c *Cron) Expired(fn func(e *Entry)) {
+	now := time.Now().Local().Unix()
+	for _, e := range c.entries {
+		if e.Next.Unix() < now {
+			fn(e)
+		}
+	}
+}
