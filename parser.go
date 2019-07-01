@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"log"
+	"github.com/pubgo/errors"
 	"math"
 	"strconv"
 	"strings"
@@ -22,9 +22,7 @@ func Parse(spec string) Schedule {
 	// Split on whitespace.  We require 5 or 6 fields.
 	// (second) (minute) (hour) (day of month) (month) (day of week, optional)
 	fields := strings.Fields(spec)
-	if len(fields) != 5 && len(fields) != 6 {
-		log.Panicf("Expected 5 or 6 fields, found %d: %s", len(fields), spec)
-	}
+	errors.T(len(fields) != 5 && len(fields) != 6, "Expected 5 or 6 fields, found %d: %s", len(fields), spec)
 
 	// If a sixth field is not provided (DayOfWeek), then it is equivalent to star.
 	if len(fields) == 5 {
@@ -79,7 +77,7 @@ func getRange(expr string, r bounds) uint64 {
 		case 2:
 			end = parseIntOrName(lowAndHigh[1], r.names)
 		default:
-			log.Panicf("Too many hyphens: %s", expr)
+			errors.T(true, "Too many hyphens: %s", expr)
 		}
 	}
 
@@ -94,18 +92,12 @@ func getRange(expr string, r bounds) uint64 {
 			end = r.max
 		}
 	default:
-		log.Panicf("Too many slashes: %s", expr)
+		errors.T(true, "Too many slashes: %s", expr)
 	}
 
-	if start < r.min {
-		log.Panicf("Beginning of range (%d) below minimum (%d): %s", start, r.min, expr)
-	}
-	if end > r.max {
-		log.Panicf("End of range (%d) above maximum (%d): %s", end, r.max, expr)
-	}
-	if start > end {
-		log.Panicf("Beginning of range (%d) beyond end of range (%d): %s", start, end, expr)
-	}
+	errors.T(start < r.min, "Beginning of range (%d) below minimum (%d): %s", start, r.min, expr)
+	errors.T(end > r.max, "End of range (%d) above maximum (%d): %s", end, r.max, expr)
+	errors.T(start > end, "Beginning of range (%d) beyond end of range (%d): %s", start, end, expr)
 
 	return getBits(start, end, step) | extra_star
 }
@@ -123,13 +115,8 @@ func parseIntOrName(expr string, names map[string]uint) uint {
 // mustParseInt parses the given expression as an int or panics.
 func mustParseInt(expr string) uint {
 	num, err := strconv.Atoi(expr)
-	if err != nil {
-		log.Panicf("Failed to parse int from %s: %s", expr, err)
-	}
-	if num < 0 {
-		log.Panicf("Negative number (%d) not allowed: %s", num, expr)
-	}
-
+	errors.Wrap(err, "Failed to parse int from %s: %s", expr, err)
+	errors.T(num < 0, "Negative number (%d) not allowed: %s", num, expr)
 	return uint(num)
 }
 
@@ -212,12 +199,10 @@ func parseDescriptor(spec string) Schedule {
 	const every = "@every "
 	if strings.HasPrefix(spec, every) {
 		duration, err := time.ParseDuration(spec[len(every):])
-		if err != nil {
-			log.Panicf("Failed to parse duration %s: %s", spec, err)
-		}
+		errors.Wrap(err, "Failed to parse duration %s: %s", spec, err)
 		return Every(duration)
 	}
 
-	log.Panicf("Unrecognized descriptor: %s", spec)
+	errors.T(true, "Unrecognized descriptor: %s", spec)
 	return nil
 }
