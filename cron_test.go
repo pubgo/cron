@@ -2,6 +2,7 @@ package cron
 
 import (
 	"fmt"
+	"github.com/pubgo/errors"
 	"sync"
 	"testing"
 	"time"
@@ -14,6 +15,8 @@ const ONE_SECOND = 1*time.Second + 10*time.Millisecond
 
 // Start and stop cron with no entries.
 func TestNoEntries(t *testing.T) {
+	defer errors.Debug()
+
 	cron := New()
 	cron.Start()
 
@@ -26,6 +29,8 @@ func TestNoEntries(t *testing.T) {
 
 // Start, stop, then add an entry. Verify entry doesn't run.
 func TestStopCausesJobsToNotRun(t *testing.T) {
+	defer errors.Debug()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
