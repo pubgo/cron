@@ -7,7 +7,7 @@ import (
 )
 
 func TestConstantDelayNext(t *testing.T) {
-	defer errors.Debug()
+	defer errors.Assert()
 
 	tests := []struct {
 		time     string
