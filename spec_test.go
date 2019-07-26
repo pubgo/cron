@@ -7,6 +7,8 @@ import (
 )
 
 func TestActivation(t *testing.T) {
+	defer errors.Assert()
+
 	tests := []struct {
 		time, spec string
 		expected   bool
@@ -65,6 +67,8 @@ func TestActivation(t *testing.T) {
 }
 
 func TestNext(t *testing.T) {
+	defer errors.Assert()
+
 	runs := []struct {
 		time, spec string
 		expected   string
@@ -123,6 +127,8 @@ func TestNext(t *testing.T) {
 }
 
 func getTime(value string) time.Time {
+	defer errors.Assert()
+
 	if value == "" {
 		return time.Time{}
 	}

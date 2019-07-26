@@ -15,7 +15,7 @@ const ONE_SECOND = 1*time.Second + 10*time.Millisecond
 
 // Start and stop cron with no entries.
 func TestNoEntries(t *testing.T) {
-	defer errors.Debug()
+	defer errors.Assert()
 
 	cron := New()
 	cron.Start()
@@ -29,7 +29,7 @@ func TestNoEntries(t *testing.T) {
 
 // Start, stop, then add an entry. Verify entry doesn't run.
 func TestStopCausesJobsToNotRun(t *testing.T) {
-	defer errors.Debug()
+	defer errors.Assert()
 
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -51,6 +51,8 @@ func TestStopCausesJobsToNotRun(t *testing.T) {
 
 // Add a job, start cron, expect it runs.
 func TestAddBeforeRunning(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -69,6 +71,8 @@ func TestAddBeforeRunning(t *testing.T) {
 
 // Start cron, add a job, expect it runs.
 func TestAddWhileRunning(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -86,6 +90,8 @@ func TestAddWhileRunning(t *testing.T) {
 
 // Test timing with Entries.
 func TestSnapshotEntries(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -117,6 +123,8 @@ func TestSnapshotEntries(t *testing.T) {
 // that the immediate entry runs immediately.
 // Also: Test that multiple jobs run in the same instant.
 func TestMultipleEntries(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
@@ -138,6 +146,8 @@ func TestMultipleEntries(t *testing.T) {
 
 // Test running the same job twice.
 func TestRunningJobTwice(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
@@ -157,6 +167,8 @@ func TestRunningJobTwice(t *testing.T) {
 }
 
 func TestRunningMultipleSchedules(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
@@ -180,6 +192,8 @@ func TestRunningMultipleSchedules(t *testing.T) {
 
 // Test that the cron is run in the local time zone (as opposed to UTC).
 func TestLocalTimezone(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -210,6 +224,8 @@ func (t testJob) Run(tt time.Time, name string) {
 
 // Simple test using Runnables.
 func TestJob(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -248,6 +264,8 @@ func TestJob(t *testing.T) {
 
 // Add a job, start cron, remove the job, expect it to have not run
 func TestAddBeforeRunningThenRemoveWhileRunning(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -267,6 +285,8 @@ func TestAddBeforeRunningThenRemoveWhileRunning(t *testing.T) {
 
 // Add a job, remove the job, start cron, expect it to have not run
 func TestAddBeforeRunningThenRemoveBeforeRunning(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 
@@ -303,6 +323,8 @@ func stop(cron *Cron) chan bool {
 }
 
 func TestMuti(t *testing.T) {
+	defer errors.Assert()
+
 	wg := &sync.WaitGroup{}
 	cron := New()
 	_func := func(t time.Time, name string) {

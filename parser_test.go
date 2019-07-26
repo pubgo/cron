@@ -8,6 +8,8 @@ import (
 )
 
 func TestRange(t *testing.T) {
+	defer errors.Assert()
+
 	ranges := []struct {
 		expr     string
 		min, max uint
@@ -36,6 +38,8 @@ func TestRange(t *testing.T) {
 }
 
 func TestField(t *testing.T) {
+	defer errors.Assert()
+
 	fields := []struct {
 		expr     string
 		min, max uint
@@ -54,6 +58,8 @@ func TestField(t *testing.T) {
 }
 
 func TestBits(t *testing.T) {
+	defer errors.Assert()
+
 	allBits := []struct {
 		r        bounds
 		expected uint64
@@ -90,6 +96,8 @@ func TestBits(t *testing.T) {
 }
 
 func TestSpecSchedule(t *testing.T) {
+	defer errors.Assert()
+
 	entries := []struct {
 		expr     string
 		expected Schedule
