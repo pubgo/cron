@@ -337,7 +337,7 @@ func TestMuti(t *testing.T) {
 	for i := 0; i < 100000; i++ {
 		fmt.Println(i)
 		wg.Add(1)
-		cron.AddFunc("*/2 * * * * *", _func, fmt.Sprintf("test%d", i))
+		cron.AddFunc(fmt.Sprintf("test%d", i), "*/2 * * * * *", _func)
 	}
 
 	cron.Start()

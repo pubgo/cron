@@ -90,7 +90,7 @@ type FuncJob func(time.Time, string)
 func (f FuncJob) Run(t time.Time, name string) { f(t, name) }
 
 // AddFunc adds a func to the Cron to be run on the given schedule.
-func (c *Cron) AddFunc(spec string, cmd func(time.Time, string), name string) {
+func (c *Cron) AddFunc(name string, spec string, cmd func(time.Time, string)) {
 	c.AddJob(spec, FuncJob(cmd), name)
 }
 
@@ -249,6 +249,15 @@ func (c *Cron) Each(fn func(e *Entry)) {
 	for _, e := range c.entries {
 		fn(e)
 	}
+}
+
+func (c *Cron) GetCron(name string) *Entry {
+	for _, e := range c.entries {
+		if e.Name == name {
+			return e
+		}
+	}
+	return nil
 }
 
 func (c *Cron) Expired(fn func(e *Entry)) {
