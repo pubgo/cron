@@ -1,6 +1,7 @@
+package cron
+
 // This library implements a cron spec parser and runner.  See the README for
 // more details.
-package cron
 
 import (
 	"sort"
@@ -84,9 +85,10 @@ func New() *Cron {
 	}
 }
 
-// A wrapper that turns a func() into a cron.Job
+// FuncJob is A wrapper that turns a func() into a cron.Job
 type FuncJob func(time.Time, string)
 
+// Run run job
 func (f FuncJob) Run(t time.Time, name string) { f(t, name) }
 
 // AddFunc adds a func to the Cron to be run on the given schedule.
@@ -94,7 +96,7 @@ func (c *Cron) AddFunc(name string, spec string, cmd func(time.Time, string)) {
 	c.AddJob(spec, FuncJob(cmd), name)
 }
 
-// AddFunc adds a Job to the Cron to be run on the given schedule.
+// AddJob adds a Job to the Cron to be run on the given schedule.
 func (c *Cron) AddJob(spec string, cmd Job, name string) {
 	c.Schedule(Parse(spec), cmd, name)
 }
@@ -245,12 +247,14 @@ func (c *Cron) entrySnapshot() []*Entry {
 	return entries
 }
 
+// Each list the cron entry
 func (c *Cron) Each(fn func(e *Entry)) {
 	for _, e := range c.entries {
 		fn(e)
 	}
 }
 
+// GetCron get cron entry
 func (c *Cron) GetCron(name string) *Entry {
 	for _, e := range c.entries {
 		if e.Name == name {
@@ -260,6 +264,7 @@ func (c *Cron) GetCron(name string) *Entry {
 	return nil
 }
 
+// Expired list Expired entry
 func (c *Cron) Expired(fn func(e *Entry)) {
 	now := time.Now().Local().Unix()
 	for _, e := range c.entries {

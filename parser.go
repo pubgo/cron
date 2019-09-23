@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"github.com/pubgo/errors"
+	"github.com/pubgo/g/errors"
 	"math"
 	"strconv"
 	"strings"
@@ -22,7 +22,7 @@ func Parse(spec string) Schedule {
 	// Split on whitespace.  We require 5 or 6 fields.
 	// (second) (minute) (hour) (day of month) (month) (day of week, optional)
 	fields := strings.Fields(spec)
-	errors.T(len(fields) != 5 && len(fields) != 6, "Expected 5 or 6 fields, found %d: %s", len(fields), spec)
+	errors.PanicT(len(fields) != 5 && len(fields) != 6, "Expected 5 or 6 fields, found %d: %s", len(fields), spec)
 
 	// If a sixth field is not provided (DayOfWeek), then it is equivalent to star.
 	if len(fields) == 5 {
@@ -63,11 +63,11 @@ func getRange(expr string, r bounds) uint64 {
 		singleDigit      = len(lowAndHigh) == 1
 	)
 
-	var extra_star uint64
+	var extraStar uint64
 	if lowAndHigh[0] == "*" || lowAndHigh[0] == "?" {
 		start = r.min
 		end = r.max
-		extra_star = starBit
+		extraStar = starBit
 	} else {
 		start = parseIntOrName(lowAndHigh[0], r.names)
 		switch len(lowAndHigh) {
@@ -76,7 +76,7 @@ func getRange(expr string, r bounds) uint64 {
 		case 2:
 			end = parseIntOrName(lowAndHigh[1], r.names)
 		default:
-			errors.T(true, "Too many hyphens: %s", expr)
+			errors.PanicT(true, "Too many hyphens: %s", expr)
 		}
 	}
 
@@ -91,14 +91,14 @@ func getRange(expr string, r bounds) uint64 {
 			end = r.max
 		}
 	default:
-		errors.T(true, "Too many slashes: %s", expr)
+		errors.PanicT(true, "Too many slashes: %s", expr)
 	}
 
-	errors.T(start < r.min, "Beginning of range (%d) below minimum (%d): %s", start, r.min, expr)
-	errors.T(end > r.max, "End of range (%d) above maximum (%d): %s", end, r.max, expr)
-	errors.T(start > end, "Beginning of range (%d) beyond end of range (%d): %s", start, end, expr)
+	errors.PanicT(start < r.min, "Beginning of range (%d) below minimum (%d): %s", start, r.min, expr)
+	errors.PanicT(end > r.max, "End of range (%d) above maximum (%d): %s", end, r.max, expr)
+	errors.PanicT(start > end, "Beginning of range (%d) beyond end of range (%d): %s", start, end, expr)
 
-	return getBits(start, end, step) | extra_star
+	return getBits(start, end, step) | extraStar
 }
 
 // parseIntOrName returns the (possibly-named) integer contained in expr.
@@ -114,8 +114,8 @@ func parseIntOrName(expr string, names map[string]uint) uint {
 // mustParseInt parses the given expression as an int or panics.
 func mustParseInt(expr string) uint {
 	num, err := strconv.Atoi(expr)
-	errors.Wrap(err, "Failed to parse int from %s: %s", expr, err)
-	errors.T(num < 0, "Negative number (%d) not allowed: %s", num, expr)
+	errors.PanicM(err, "Failed to parse int from %s: %s", expr, err)
+	errors.PanicT(num < 0, "Negative number (%d) not allowed: %s", num, expr)
 	return uint(num)
 }
 
@@ -198,10 +198,10 @@ func parseDescriptor(spec string) Schedule {
 	const every = "@every "
 	if strings.HasPrefix(spec, every) {
 		duration, err := time.ParseDuration(spec[len(every):])
-		errors.Wrap(err, "Failed to parse duration %s: %s", spec, err)
+		errors.PanicM(err, "Failed to parse duration %s: %s", spec, err)
 		return Every(duration)
 	}
 
-	errors.T(true, "Unrecognized descriptor: %s", spec)
+	errors.PanicT(true, "Unrecognized descriptor: %s", spec)
 	return nil
 }

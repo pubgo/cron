@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"github.com/pubgo/errors"
+	"github.com/pubgo/g/errors"
 	"reflect"
 	"testing"
 	"time"
@@ -33,7 +33,7 @@ func TestRange(t *testing.T) {
 
 	for _, c := range ranges {
 		actual := getRange(c.expr, bounds{c.min, c.max, nil})
-		errors.T(actual != c.expected, "%s => (expected) %d != %d (actual)", c.expr, c.expected, actual)
+		errors.PanicT(actual != c.expected, "%s => (expected) %d != %d (actual)", c.expr, c.expected, actual)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestField(t *testing.T) {
 
 	for _, c := range fields {
 		actual := getField(c.expr, bounds{c.min, c.max, nil})
-		errors.T(actual != c.expected, "%s => (expected) %d != %d (actual)", c.expr, c.expected, actual)
+		errors.PanicT(actual != c.expected, "%s => (expected) %d != %d (actual)", c.expr, c.expected, actual)
 	}
 }
 
@@ -73,7 +73,7 @@ func TestBits(t *testing.T) {
 
 	for _, c := range allBits {
 		actual := all(c.r) // all() adds the starBit, so compensate for that..
-		errors.T(c.expected|starBit != actual, "%d-%d/%d => (expected) %b != %b (actual)",
+		errors.PanicT(c.expected|starBit != actual, "%d-%d/%d => (expected) %b != %b (actual)",
 			c.r.min, c.r.max, 1, c.expected|starBit, actual)
 	}
 
@@ -90,7 +90,7 @@ func TestBits(t *testing.T) {
 
 	for _, c := range bits {
 		actual := getBits(c.min, c.max, c.step)
-		errors.T(c.expected != actual, "%d-%d/%d => (expected) %b != %b (actual)",
+		errors.PanicT(c.expected != actual, "%d-%d/%d => (expected) %b != %b (actual)",
 			c.min, c.max, c.step, c.expected, actual)
 	}
 }
@@ -108,6 +108,6 @@ func TestSpecSchedule(t *testing.T) {
 
 	for _, c := range entries {
 		actual := Parse(c.expr)
-		errors.T(!reflect.DeepEqual(actual, c.expected), "%s => (expected) %b != %b (actual)", c.expr, c.expected, actual)
+		errors.PanicT(!reflect.DeepEqual(actual, c.expected), "%s => (expected) %b != %b (actual)", c.expr, c.expected, actual)
 	}
 }

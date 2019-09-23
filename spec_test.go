@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"github.com/pubgo/errors"
+	"github.com/pubgo/g/errors"
 	"testing"
 	"time"
 )
@@ -61,7 +61,7 @@ func TestActivation(t *testing.T) {
 	for _, test := range tests {
 		actual := Parse(test.spec).Next(getTime(test.time).Add(-1 * time.Second))
 		expected := getTime(test.time)
-		errors.T(test.expected && expected != actual || !test.expected && expected == actual, "Fail evaluating %s on %s: (expected) %s != %s (actual)",
+		errors.PanicT(test.expected && expected != actual || !test.expected && expected == actual, "Fail evaluating %s on %s: (expected) %s != %s (actual)",
 			test.spec, test.time, expected, actual)
 	}
 }
@@ -122,7 +122,7 @@ func TestNext(t *testing.T) {
 	for _, c := range runs {
 		actual := Parse(c.spec).Next(getTime(c.time))
 		expected := getTime(c.expected)
-		errors.T(!actual.Equal(expected), "%s, \"%s\": (expected) %v != %v (actual)", c.time, c.spec, expected, actual)
+		errors.PanicT(!actual.Equal(expected), "%s, \"%s\": (expected) %v != %v (actual)", c.time, c.spec, expected, actual)
 	}
 }
 
@@ -137,7 +137,7 @@ func getTime(value string) time.Time {
 		t, err = time.Parse("Mon Jan 2 15:04:05 2006", value)
 		if err != nil {
 			t, err = time.Parse("2006-01-02T15:04:05-0700", value)
-			errors.Wrap(err, "")
+			errors.Panic(err)
 			// Daylight savings time tests require location
 			if ny, err := time.LoadLocation("America/New_York"); err == nil {
 				t = t.In(ny)

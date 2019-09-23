@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"github.com/pubgo/errors"
+	"github.com/pubgo/g/errors"
 	"testing"
 	"time"
 )
@@ -47,6 +47,6 @@ func TestConstantDelayNext(t *testing.T) {
 	for _, c := range tests {
 		actual := Every(c.delay).Next(getTime(c.time))
 		expected := getTime(c.expected)
-		errors.T(actual != expected, "%s, \"%s\": (expected) %v != %v (actual)", c.time, c.delay, expected, actual)
+		errors.PanicT(actual != expected, "%s, \"%s\": (expected) %v != %v (actual)", c.time, c.delay, expected, actual)
 	}
 }
